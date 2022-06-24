@@ -18,6 +18,7 @@ function Canvas(props: Props, ref: any) {
   const [{ cHeight, cWidth }, setSize] = useState({ cHeight: 0, cWidth: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const addPointRef = useRef<any>(null);
+  const mouseDown = useRef(false);
 
   useImperativeHandle(ref, () => ({
     addPointFromMsg: addPointRef.current,
@@ -34,15 +35,6 @@ function Canvas(props: Props, ref: any) {
       return;
     }
 
-    // canvas.onmousedown = function (event) {
-    //   mouseDown = true;
-    // };
-
-    // canvas.onmouseup = function (event) {
-    //   mouseDown = false;
-    //   lastPoint = null;
-    // };
-
     const points: Point[] = [];
 
     const addPoint = (
@@ -58,7 +50,17 @@ function Canvas(props: Props, ref: any) {
     };
     addPointRef.current = addPoint;
 
+    canvas.onmousedown = function (event) {
+      mouseDown.current = true;
+    };
+
+    canvas.onmouseup = function (event) {
+      mouseDown.current = false;
+      // lastPoint = null;
+    };
+
     canvas.onmousemove = ({ clientX, clientY }) => {
+      if (!mouseDown.current) return;
       const mousePosition = [
         clientX - canvas.offsetLeft,
         clientY - canvas.offsetTop,
