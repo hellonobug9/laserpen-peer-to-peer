@@ -11,8 +11,6 @@ function App() {
   const laserRef = useRef<any>(null);
 
   const onPeerData = (id: any, data: any) => {
-    // console.log(`${data} from `, id);
-    // console.log('laserRef', laserRef.current);
     const { x, y, isMouseDown } = JSON.parse(data);
     laserRef.current.addPointFromMsg(x, y, false, isMouseDown);
   };
@@ -31,18 +29,17 @@ function App() {
         return;
       }
       let conn = myPeer.connect(id);
-      // console.log('tao moi connection', conn);
+      // tao moi connection
       conn.on("data", (data: any) => {
         onPeerData(conn.peer, data);
       });
       peerConnections.current[id] = conn;
-      // console.log('luu connection', peerConnections.current);
+      // luu connection
     });
   };
 
   const broadcast = (data: any) => {
     Object.values(peerConnections.current).forEach((peer: any) => {
-      // console.log("broadcast peer", peer);
       if (peer) {
         peer.send(JSON.stringify(data));
       }
@@ -64,13 +61,13 @@ function App() {
         case "connection":
           const peer = new window.Peer(data.id);
           peer.on("connection", function (conn: any) {
-            // console.log('nhan duoc connection', conn);
+            // nhan duoc connection
             conn.on("data", (data: any) => {
               onPeerData(conn.peer, data);
             });
             if (!peerConnections.current[conn.peer]) {
               peerConnections.current[conn.peer] = conn;
-              // console.log('luu connection', peerConnections.current);
+              // luu connection;
             }
           });
           setMyPeer(peer);
@@ -98,7 +95,6 @@ function App() {
 
   useEffect(() => {
     connetcWs();
-    // console.log('laserRef', laserRef.current);
   }, []);
 
   useEffect(() => {
