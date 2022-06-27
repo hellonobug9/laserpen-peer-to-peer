@@ -13,8 +13,8 @@ function App() {
   const onPeerData = (id: any, data: any) => {
     // console.log(`${data} from `, id);
     // console.log('laserRef', laserRef.current);
-    const {x, y}= JSON.parse(data)
-    laserRef.current.addPointFromMsg(x, y)
+    const { x, y, isMouseDown } = JSON.parse(data);
+    laserRef.current.addPointFromMsg(x, y, false, isMouseDown);
   };
 
   const connect = () => {
@@ -50,7 +50,7 @@ function App() {
   };
 
   const connetcWs = () => {
-    const ws = new WebSocket("ws://localhost:5000/ws");
+    const ws = new WebSocket("ws://localhost:8088/ws");
     // websocket onopen event listener
     ws.onopen = () => {
       console.log("connected websocket main component");
@@ -104,13 +104,12 @@ function App() {
   useEffect(() => {
     connect();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-   
   }, [peerIds]);
-  
+
   return (
     <div style={{ width: "100vw", height: "100vh" }} className="App">
-      <button onClick={() => broadcast("hello ae")}>Press me</button>
-      <Canvas ref={laserRef} broadcast={broadcast}/>
+      <button onClick={() => broadcast("hello ae")}>Laser pen</button>
+      <Canvas ref={laserRef} broadcast={broadcast} />
     </div>
   );
 }

@@ -4,10 +4,12 @@ class Point {
   x: number;
   y: number;
   lifetime: number;
+  isMouseDown: boolean;
 
-  constructor(x: number, y: number) {
+  constructor(x: number, y: number, isMouseDown: boolean) {
     this.x = x;
     this.y = y;
+    this.isMouseDown = isMouseDown;
     this.lifetime = 0;
   }
 }
@@ -40,9 +42,14 @@ function Canvas(props: Props, ref: any) {
     const addPoint = (
       x: number,
       y: number,
-      needBroadCast?: boolean = false
+      needBroadCast?: boolean = false,
+      mouseStatus?: boolean = false
     ) => {
-      const point = new Point(x, y);
+      const point = new Point(
+        x,
+        y,
+        !needBroadCast ? mouseStatus : mouseDown?.current ? true : false
+      );
       points.push(point);
       if (needBroadCast) {
         props.broadcast(point);
@@ -56,16 +63,14 @@ function Canvas(props: Props, ref: any) {
 
     canvas.onmouseup = function (event) {
       mouseDown.current = false;
-      // lastPoint = null;
     };
 
     canvas.onmousemove = ({ clientX, clientY }) => {
-      if (!mouseDown.current) return;
       const mousePosition = [
         clientX - canvas.offsetLeft,
         clientY - canvas.offsetTop,
       ];
-      addPoint(mousePosition[0], mousePosition[1], true);
+      addPoint(mousePosition[0], mousePosition[1], true, undefined);
     };
 
     const animate = () => {
@@ -77,7 +82,7 @@ function Canvas(props: Props, ref: any) {
         const point = points[i];
         let lastPoint;
 
-        if (points[i - 1] !== undefined) {
+        if (points[i - 1] !== undefined && points[i - 1]?.isMouseDown) {
           lastPoint = points[i - 1];
         } else lastPoint = point;
 
@@ -115,14 +120,14 @@ function Canvas(props: Props, ref: any) {
       }
 
       // If the user's mouse is currently on the canvas then draw the pointer cap
-      if (points.length) {
-        const { x, y } = points[points.length - 1];
-        ctx.beginPath();
-        ctx.fillStyle = `rgb(${190},${0},${210})`;
-        ctx.arc(x, y, 3, 0, Math.PI * 2, false);
-        ctx.closePath();
-        ctx.fill();
-      }
+      // if (points.length) {
+      //   const { x, y } = points[points.length - 1];
+      //   ctx.beginPath();
+      //   ctx.fillStyle = `rgb(${190},${0},${210})`;
+      //   ctx.arc(x, y, 3, 0, Math.PI * 2, false);
+      //   ctx.closePath();
+      //   ctx.fill();
+      // }
 
       requestAnimationFrame(animate);
     };

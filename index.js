@@ -49,6 +49,6 @@ wss.on("connection", (ws) => {
 //   res.sendFile(path.join(__dirname, "client/dist/index.html"));
 // });
 
-server.listen(process.env.PORT || 5000, () => {
+server.listen(process.env.PORT || 8088, () => {
   console.log(`Started server on port ${server.address().port}`);
 });
